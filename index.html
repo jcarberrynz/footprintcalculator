@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Carbon Footprint | Annual Estimate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a4a2e;
+    --forest-mid: #2d7a4f;
+    --forest-light: #4aab73;
+    --leaf: #7ec87a;
+    --cream: #f6f2eb;
+    --warm-white: #fdfaf5;
+    --earth: #5c4a32;
+    --earth-light: #9c7d58;
+    --sky: #e8f4ef;
+    --text: #1e2d1f;
+    --text-muted: #4a6350;
+    --border: rgba(30,45,31,0.12);
+    --border-strong: rgba(30,45,31,0.22);
+    --red-soft: #fdf0ee;
+    --red-text: #b03a2e;
+    --amber-soft: #fdf6e8;
+    --amber-text: #8a5c00;
+    --green-soft: #eaf5f0;
+    --green-text: #1a6b40;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm-white);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--forest);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .logo-leaf {
+    width: 28px;
+    height: 28px;
+    background: var(--forest-light);
+    border-radius: 50% 50% 50% 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transform: rotate(-20deg);
+  }
+  .logo-leaf svg { transform: rotate(20deg); }
+  .progress-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+  }
+  .progress-bar-wrap {
+    width: 120px;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--leaf);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--forest);
+    padding: 64px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(74,171,115,0.2), transparent);
+    pointer-events: none;
+  }
+  .hero-label {
+    display: inline-block;
+    background: rgba(126,200,122,0.2);
+    color: var(--leaf);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(126,200,122,0.3);
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero h1 em { color: var(--leaf); font-style: italic; }
+  .hero-sub {
+    color: rgba(255,255,255,0.65);
+    font-size: 17px;
+    max-width: 440px;
+    margin: 0 auto 32px;
+    font-weight: 300;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.25); border-radius: 50%; }
+
+  /* ── LAYOUT ── */
+  .main-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    animation: fadeUp 0.35s ease forwards;
+  }
+  .section.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    padding: 52px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+  .section-number {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--forest-mid);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .section-desc {
+    font-size: 16px;
+    color: var(--text-muted);
+    font-weight: 300;
+    max-width: 500px;
+  }
+
+  /* ── QUESTION GROUPS ── */
+  .q-group {
+    margin-bottom: 32px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+  }
+  .q-group + .q-group { margin-top: 16px; }
+
+  .q-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .q-label .q-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--forest-mid);
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-left: 30px;
+    font-weight: 300;
+  }
+
+  /* ── RADIO CARDS ── */
+  .radio-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .radio-cards.wide { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .radio-card {
+    position: relative;
+    cursor: pointer;
+  }
+  .radio-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .radio-card .card-body {
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    background: var(--warm-white);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .radio-card .card-icon {
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .radio-card input:checked + .card-body {
+    border-color: var(--forest-mid);
+    background: var(--green-soft);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .radio-card input:checked + .card-body::after {
+    content: '✓';
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--forest-mid);
+    font-weight: 700;
+  }
+  .radio-card .card-body:hover {
+    border-color: var(--forest-light);
+    background: var(--sky);
+  }
+
+  /* ── CHECKBOX CARDS ── */
+  .check-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .check-card {
+    position: relative;
+    cursor: pointer;
+  }
+  .check-card input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .check-card .card-body {
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    background: var(--warm-white);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .check-card .card-icon { font-size: 20px; line-height: 1; }
+  .check-card input:checked + .card-body {
+    border-color: var(--forest-mid);
+    background: var(--green-soft);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .check-card input:checked + .card-body::after {
+    content: '✓';
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--forest-mid);
+    font-weight: 700;
+  }
+
+  /* ── SLIDERS ── */
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .slider-group input[type="range"] {
+    flex: 1;
+    min-width: 120px;
+    height: 6px;
+    appearance: none;
+    background: var(--border-strong);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--forest-mid);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .slider-val {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--forest);
+    min-width: 60px;
+    text-align: right;
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ── NUMBER INPUTS ── */
+  .num-inputs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .num-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 100px;
+  }
+  .num-input-group label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .num-input-group input[type="number"] {
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--warm-white);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .num-input-group input:focus { border-color: var(--forest-mid); }
+
+  /* ── SELECT ── */
+  select {
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--warm-white);
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a6350' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+  select:focus { border-color: var(--forest-mid); }
+
+  /* ── CONDITIONAL SECTIONS ── */
+  .conditional {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border-strong);
+  }
+  .conditional.shown { display: block; }
+
+  /* ── NAV BUTTONS ── */
+  .nav-btns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary {
+    background: var(--forest);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(26,74,46,0.25);
+  }
+  .btn-primary:hover { background: var(--forest-mid); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-strong);
+  }
+  .btn-secondary:hover { border-color: var(--forest-mid); color: var(--text); }
+  .btn-arrow { font-size: 18px; line-height: 1; }
+
+  /* ── RESULTS ── */
+  #results { display: none; }
+  #results.active { display: block; }
+
+  .results-header {
+    padding: 52px 0 36px;
+    text-align: center;
+  }
+  .total-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    background: var(--forest);
+    color: #fff;
+    padding: 20px 40px;
+    border-radius: var(--radius);
+    margin: 24px 0;
+  }
+  .total-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--leaf);
+  }
+  .total-unit {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+  }
+  .benchmark-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .bench-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .bench-val {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--forest);
+    margin-bottom: 2px;
+  }
+  .bench-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── BREAKDOWN CHART ── */
+  .breakdown-section {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .breakdown-title {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .breakdown-row {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .breakdown-icon { font-size: 18px; }
+  .breakdown-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .breakdown-bar-label {
+    font-size: 14px;
+    color: var(--text);
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--forest-light);
+    transition: width 1s ease;
+    width: 0;
+  }
+  .bar-fill.transport { background: #e07b39; }
+  .bar-fill.home { background: #5891c8; }
+  .bar-fill.food { background: #7ec87a; }
+  .bar-fill.stuff { background: #c87e9b; }
+  .breakdown-val {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-align: right;
+    min-width: 72px;
+  }
+
+  /* ── RATING BADGE ── */
+  .rating-block {
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .rating-block.high { background: var(--red-soft); border: 1px solid rgba(176,58,46,0.15); }
+  .rating-block.med { background: var(--amber-soft); border: 1px solid rgba(138,92,0,0.15); }
+  .rating-block.low { background: var(--green-soft); border: 1px solid rgba(26,107,64,0.15); }
+  .rating-emoji { font-size: 36px; flex-shrink: 0; }
+  .rating-text h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+  .rating-block.high .rating-text h3 { color: var(--red-text); }
+  .rating-block.med .rating-text h3 { color: var(--amber-text); }
+  .rating-block.low .rating-text h3 { color: var(--green-text); }
+  .rating-text p { font-size: 14px; color: var(--text-muted); font-weight: 300; }
+
+  /* ── TIPS ── */
+  .tips-section {
+    margin-bottom: 20px;
+  }
+  .tips-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  .tip-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .tip-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--sky);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .tip-text strong {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .tip-text span { font-size: 13px; color: var(--text-muted); font-weight: 300; }
+  .tip-saving {
+    margin-left: auto;
+    background: var(--green-soft);
+    color: var(--green-text);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+
+  /* ── FOOTER ── */
+  .results-footer {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .results-footer p { font-size: 13px; color: var(--text-muted); font-weight: 300; }
+  .results-footer a { color: var(--forest-mid); text-decoration: none; }
+  .results-footer a:hover { text-decoration: underline; }
+
+  .restart-btn {
+    margin-top: 20px;
+    background: transparent;
+    border: 1.5px solid var(--border-strong);
+    color: var(--text-muted);
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .restart-btn:hover { border-color: var(--forest-mid); color: var(--text); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 560px) {
+    .radio-cards { grid-template-columns: 1fr 1fr; }
+    .check-cards { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .total-num { font-size: 40px; }
+    .hero { padding: 44px 20px 60px; }
+    .benchmark-row { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-leaf">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+      </div>
+      Carbon Footprint Calculator
+    </div>
+    <div class="progress-header">
+      <span id="progress-label">Step 1 of 4</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero" id="hero-block">
+  <div class="hero-label">Free &amp; takes ~5 minutes</div>
+  <h1>What's your<br><em>carbon footprint?</em></h1>
+  <p class="hero-sub">Answer a few questions about your home, diet, travel and purchases to get your personalised annual estimate in tCO₂e.</p>
+  <div class="hero-meta">
+    <span>🌿 No account needed</span>
+    <span class="dot"></span>
+    <span>📊 Based on NZ & global data</span>
+    <span class="dot"></span>
+    <span>🔒 Nothing is stored</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-wrap">
+
+  <!-- ═══ SECTION 1: HOME ═══ -->
+  <section class="section active" id="sec-home">
+    <div class="section-header">
+      <div class="section-number">Section 1 of 4</div>
+      <h2 class="section-title">Your home</h2>
+      <p class="section-desc">How you heat and power your home has one of the biggest impacts on your footprint.</p>
+    </div>
+
+    <!-- House size -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        How many people live in your home?
+      </div>
+      <p class="q-hint">We use this to estimate your share of household energy.</p>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="hh_size" value="1"><span class="card-body"><span class="card-icon">🧑</span>Just me</span></label>
+        <label class="radio-card"><input type="radio" name="hh_size" value="2" checked><span class="card-body"><span class="card-icon">👫</span>2 people</span></label>
+        <label class="radio-card"><input type="radio" name="hh_size" value="3"><span class="card-body"><span class="card-icon">👨‍👩‍👦</span>3 people</span></label>
+        <label class="radio-card"><input type="radio" name="hh_size" value="4"><span class="card-body"><span class="card-icon">👨‍👩‍👧‍👦</span>4 people</span></label>
+        <label class="radio-card"><input type="radio" name="hh_size" value="5"><span class="card-body"><span class="card-icon">🏠</span>5+ people</span></label>
+      </div>
+    </div>
+
+    <!-- House size -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        What best describes the size of your home?
+      </div>
+      <div class="radio-cards wide">
+        <label class="radio-card"><input type="radio" name="home_size" value="small"><span class="card-body"><span class="card-icon">🏢</span>Small apartment / unit</span></label>
+        <label class="radio-card"><input type="radio" name="home_size" value="medium" checked><span class="card-body"><span class="card-icon">🏡</span>Medium house (3 bed)</span></label>
+        <label class="radio-card"><input type="radio" name="home_size" value="large"><span class="card-body"><span class="card-icon">🏰</span>Large house (4+ bed)</span></label>
+      </div>
+    </div>
+
+    <!-- Heating fuel -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        How do you mainly heat your home?
+      </div>
+      <p class="q-hint">Select the most common heating source you rely on.</p>
+      <div class="radio-cards wide">
+        <label class="radio-card"><input type="radio" name="heating" value="elec_hp"><span class="card-body"><span class="card-icon">♨️</span>Heat pump (electric)</span></label>
+        <label class="radio-card"><input type="radio" name="heating" value="elec_radiator"><span class="card-body"><span class="card-icon">🔌</span>Electric heaters</span></label>
+        <label class="radio-card"><input type="radio" name="heating" value="gas"><span class="card-body"><span class="card-icon">🔥</span>Natural gas / LPG</span></label>
+        <label class="radio-card"><input type="radio" name="heating" value="wood"><span class="card-body"><span class="card-icon">🪵</span>Wood burner</span></label>
+        <label class="radio-card"><input type="radio" name="heating" value="none"><span class="card-body"><span class="card-icon">❄️</span>No heating / mild climate</span></label>
+      </div>
+    </div>
+
+    <!-- Cooking fuel -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+        What do you cook with?
+      </div>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="cooking" value="electric" checked><span class="card-body"><span class="card-icon">⚡</span>Electric</span></label>
+        <label class="radio-card"><input type="radio" name="cooking" value="gas"><span class="card-body"><span class="card-icon">🔥</span>Gas hob/oven</span></label>
+        <label class="radio-card"><input type="radio" name="cooking" value="induction"><span class="card-body"><span class="card-icon">✨</span>Induction</span></label>
+      </div>
+    </div>
+
+    <!-- Hot water -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v6"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 22 4-10 4 10"/><path d="M12 8a4 4 0 0 1 4 4v6H8v-6a4 4 0 0 1 4-4z"/></svg>
+        How do you heat water in your home?
+      </div>
+      <p class="q-hint">Water heating is typically the second-largest energy use in a NZ home after heating.</p>
+      <div class="radio-cards wide">
+        <label class="radio-card"><input type="radio" name="hot_water" value="heat_pump_hw" checked><span class="card-body"><span class="card-icon">♨️</span>Heat pump (electric)</span></label>
+        <label class="radio-card"><input type="radio" name="hot_water" value="electric_hw"><span class="card-body"><span class="card-icon">🔌</span>Electric cylinder / resistance</span></label>
+        <label class="radio-card"><input type="radio" name="hot_water" value="gas_hw"><span class="card-body"><span class="card-icon">🔥</span>Natural gas / LPG</span></label>
+        <label class="radio-card"><input type="radio" name="hot_water" value="solar_hw"><span class="card-body"><span class="card-icon">☀️</span>Solar hot water</span></label>
+      </div>
+    </div>
+
+    <!-- Renewables -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        Do you have rooftop solar panels?
+      </div>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="solar" value="yes"><span class="card-body"><span class="card-icon">☀️</span>Yes</span></label>
+        <label class="radio-card"><input type="radio" name="solar" value="no" checked><span class="card-body"><span class="card-icon">🌥️</span>No</span></label>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <div></div>
+      <button class="btn btn-primary" onclick="nextSection(1)">Food &amp; Diet <span class="btn-arrow">→</span></button>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 2: FOOD ═══ -->
+  <section class="section" id="sec-food">
+    <div class="section-header">
+      <div class="section-number">Section 2 of 4</div>
+      <h2 class="section-title">Food &amp; diet</h2>
+      <p class="section-desc">What you eat makes up roughly 20–30% of a typical household's footprint.</p>
+    </div>
+
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        Which best describes your diet?
+      </div>
+      <p class="q-hint">Be honest — there's no judgment here!</p>
+      <div class="radio-cards wide">
+        <label class="radio-card"><input type="radio" name="diet" value="heavy_meat"><span class="card-body"><span class="card-icon">🥩</span>Heavy meat eater (daily)</span></label>
+        <label class="radio-card"><input type="radio" name="diet" value="medium_meat" checked><span class="card-body"><span class="card-icon">🍗</span>Average meat eater</span></label>
+        <label class="radio-card"><input type="radio" name="diet" value="low_meat"><span class="card-body"><span class="card-icon">🥗</span>Low meat (few times/wk)</span></label>
+        <label class="radio-card"><input type="radio" name="diet" value="pescatarian"><span class="card-body"><span class="card-icon">🐟</span>Pescatarian</span></label>
+        <label class="radio-card"><input type="radio" name="diet" value="vegetarian"><span class="card-body"><span class="card-icon">🥦</span>Vegetarian</span></label>
+        <label class="radio-card"><input type="radio" name="diet" value="vegan"><span class="card-body"><span class="card-icon">🌱</span>Vegan</span></label>
+      </div>
+    </div>
+
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        How often do you eat locally sourced or seasonal food?
+      </div>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="local_food" value="mostly"><span class="card-body"><span class="card-icon">🌾</span>Mostly local</span></label>
+        <label class="radio-card"><input type="radio" name="local_food" value="sometimes" checked><span class="card-body"><span class="card-icon">🛒</span>Sometimes</span></label>
+        <label class="radio-card"><input type="radio" name="local_food" value="rarely"><span class="card-body"><span class="card-icon">✈️</span>Rarely / imported</span></label>
+      </div>
+    </div>
+
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        How much food do you typically throw away?
+      </div>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="food_waste" value="low"><span class="card-body"><span class="card-icon">♻️</span>Very little waste</span></label>
+        <label class="radio-card"><input type="radio" name="food_waste" value="medium" checked><span class="card-body"><span class="card-icon">🗑️</span>Some waste</span></label>
+        <label class="radio-card"><input type="radio" name="food_waste" value="high"><span class="card-body"><span class="card-icon">🗑️</span>Quite a bit of waste</span></label>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevSection(2)"><span class="btn-arrow">←</span> Home</button>
+      <button class="btn btn-primary" onclick="nextSection(2)">Travel <span class="btn-arrow">→</span></button>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 3: TRAVEL ═══ -->
+  <section class="section" id="sec-travel">
+    <div class="section-header">
+      <div class="section-number">Section 3 of 4</div>
+      <h2 class="section-title">Travel &amp; transport</h2>
+      <p class="section-desc">Flights and car travel are often the largest contributors to an individual's footprint.</p>
+    </div>
+
+    <!-- Flights -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 21 4s-2 0-3.5 1.5L14 9 5.8 7.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 3.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+        How many return flights do you take per year?
+      </div>
+      <p class="q-hint">A single return flight counts as one round trip.</p>
+      <div class="num-inputs">
+        <div class="num-input-group">
+          <label>Short haul (under 3 hrs, e.g. domestic, AU)</label>
+          <input type="number" id="flights_short" min="0" max="30" value="2">
+        </div>
+        <div class="num-input-group">
+          <label>Medium haul (3–7 hrs, e.g. Asia, Pacific)</label>
+          <input type="number" id="flights_med" min="0" max="20" value="0">
+        </div>
+        <div class="num-input-group">
+          <label>Long haul (7+ hrs, e.g. Europe, UK, USA)</label>
+          <input type="number" id="flights_long" min="0" max="10" value="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Car ownership -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 17H5a2 2 0 0 1-2-2V9a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v6a2 2 0 0 1-2 2z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>
+        Do you own or regularly drive a car?
+      </div>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="has_car" value="yes" checked onclick="showCarDetails(true)"><span class="card-body"><span class="card-icon">🚗</span>Yes</span></label>
+        <label class="radio-card"><input type="radio" name="has_car" value="no" onclick="showCarDetails(false)"><span class="card-body"><span class="card-icon">🚶</span>No</span></label>
+      </div>
+
+      <div class="conditional shown" id="car-details">
+        <div style="margin-bottom:20px">
+          <div class="q-label" style="margin-bottom:8px;">What type of car do you drive?</div>
+          <div class="radio-cards">
+            <label class="radio-card"><input type="radio" name="car_type" value="petrol" checked><span class="card-body"><span class="card-icon">⛽</span>Petrol</span></label>
+            <label class="radio-card"><input type="radio" name="car_type" value="diesel"><span class="card-body"><span class="card-icon">🛢️</span>Diesel</span></label>
+            <label class="radio-card"><input type="radio" name="car_type" value="hybrid"><span class="card-body"><span class="card-icon">🔋</span>Hybrid (HEV)</span></label>
+            <label class="radio-card"><input type="radio" name="car_type" value="phev"><span class="card-body"><span class="card-icon">🔌</span>Plug-in hybrid (PHEV)</span></label>
+            <label class="radio-card"><input type="radio" name="car_type" value="ev"><span class="card-body"><span class="card-icon">⚡</span>Electric (EV)</span></label>
+          </div>
+        </div>
+        <div>
+          <div class="q-label" style="margin-bottom:8px;">How many kilometres do you drive per year?</div>
+          <div class="slider-group">
+            <input type="range" min="0" max="50000" step="500" value="12000" id="km_driven" oninput="updateSlider('km_driven','km_val', v=>v.toLocaleString()+' km')">
+            <span class="slider-val" id="km_val">12,000 km</span>
+          </div>
+          <div class="slider-labels"><span>0 km</span><span>50,000 km</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily commute -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        How do you mainly commute to work or get around day-to-day?
+      </div>
+      <p class="q-hint">Choose the method you use most frequently for regular trips (not occasional driving).</p>
+      <div class="radio-cards wide">
+        <label class="radio-card"><input type="radio" name="commute" value="car_solo" checked onclick="showCommuteDistance(true)"><span class="card-body"><span class="card-icon">🚗</span>Drive alone</span></label>
+        <label class="radio-card"><input type="radio" name="commute" value="car_share" onclick="showCommuteDistance(true)"><span class="card-body"><span class="card-icon">🚘</span>Carpool / share rides</span></label>
+        <label class="radio-card"><input type="radio" name="commute" value="public" onclick="showCommuteDistance(true)"><span class="card-body"><span class="card-icon">🚌</span>Bus or train</span></label>
+        <label class="radio-card"><input type="radio" name="commute" value="cycle" onclick="showCommuteDistance(false)"><span class="card-body"><span class="card-icon">🚲</span>Cycle or e-bike</span></label>
+        <label class="radio-card"><input type="radio" name="commute" value="walk" onclick="showCommuteDistance(false)"><span class="card-body"><span class="card-icon">🚶</span>Walk</span></label>
+        <label class="radio-card"><input type="radio" name="commute" value="wfh" onclick="showCommuteDistance(false)"><span class="card-body"><span class="card-icon">🏠</span>Mostly work from home</span></label>
+      </div>
+
+      <div class="conditional shown" id="commute-distance">
+        <div style="margin-bottom:20px">
+          <div class="q-label" style="margin-bottom:8px;">How far is your one-way commute?</div>
+          <div class="slider-group">
+            <input type="range" min="0" max="100" step="1" value="15" id="commute_km" oninput="updateSlider('commute_km','commute_km_val', v=>v+' km')">
+            <span class="slider-val" id="commute_km_val">15 km</span>
+          </div>
+          <div class="slider-labels"><span>0 km</span><span>100 km</span></div>
+        </div>
+        <div>
+          <div class="q-label" style="margin-bottom:8px;">How many days per week do you commute this way?</div>
+          <div class="radio-cards">
+            <label class="radio-card"><input type="radio" name="commute_days" value="1"><span class="card-body"><span class="card-icon">1️⃣</span>1 day</span></label>
+            <label class="radio-card"><input type="radio" name="commute_days" value="2"><span class="card-body"><span class="card-icon">2️⃣</span>2 days</span></label>
+            <label class="radio-card"><input type="radio" name="commute_days" value="3" checked><span class="card-body"><span class="card-icon">3️⃣</span>3 days</span></label>
+            <label class="radio-card"><input type="radio" name="commute_days" value="4"><span class="card-body"><span class="card-icon">4️⃣</span>4 days</span></label>
+            <label class="radio-card"><input type="radio" name="commute_days" value="5"><span class="card-body"><span class="card-icon">5️⃣</span>5 days</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevSection(3)"><span class="btn-arrow">←</span> Food</button>
+      <button class="btn btn-primary" onclick="nextSection(3)">Stuff I Buy <span class="btn-arrow">→</span></button>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 4: STUFF ═══ -->
+  <section class="section" id="sec-stuff">
+    <div class="section-header">
+      <div class="section-number">Section 4 of 4</div>
+      <h2 class="section-title">Stuff you buy</h2>
+      <p class="section-desc">Big purchases like cars and appliances carry a high embedded carbon cost — even one-off items matter.</p>
+    </div>
+
+    <!-- Spending habits -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        How would you describe your general spending on clothing, goods and gadgets?
+      </div>
+      <div class="radio-cards wide">
+        <label class="radio-card"><input type="radio" name="spending" value="low"><span class="card-body"><span class="card-icon">🛍️</span>Minimal / second-hand focus</span></label>
+        <label class="radio-card"><input type="radio" name="spending" value="medium" checked><span class="card-body"><span class="card-icon">🏪</span>Average consumer</span></label>
+        <label class="radio-card"><input type="radio" name="spending" value="high"><span class="card-body"><span class="card-icon">💳</span>Frequent shopper / fashion-forward</span></label>
+      </div>
+    </div>
+
+    <!-- Big purchases this year -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Have you made any of these major purchases in the last 12 months?
+      </div>
+      <p class="q-hint">Tick everything that applies — these one-off items carry significant embedded carbon.</p>
+      <div class="check-cards">
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="new_car_petrol"><span class="card-body"><span class="card-icon">🚗</span>New petrol/diesel car</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="new_car_ev"><span class="card-body"><span class="card-icon">⚡</span>New electric vehicle</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="used_car"><span class="card-body"><span class="card-icon">🚘</span>Used / second-hand car</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="motorcycle"><span class="card-body"><span class="card-icon">🏍️</span>Motorcycle or scooter</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="fridge_wash"><span class="card-body"><span class="card-icon">🧊</span>Fridge, washer, or large appliance</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="tv"><span class="card-body"><span class="card-icon">📺</span>TV or home entertainment</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="laptop_phone"><span class="card-body"><span class="card-icon">💻</span>Laptop, phone or tablet</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="furniture"><span class="card-body"><span class="card-icon">🪑</span>New furniture or fit-out</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="renovation"><span class="card-body"><span class="card-icon">🔨</span>Home renovation or build</span></label>
+        <label class="check-card"><input type="checkbox" name="big_purchase" value="none"><span class="card-body"><span class="card-icon">✅</span>None of the above</span></label>
+      </div>
+    </div>
+
+    <!-- Recycling -->
+    <div class="q-group">
+      <div class="q-label">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 7.196 9.5 3.1 10.598"/><path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/><path d="m13.378 9.633 4.096 1.098 1.097-4.096"/></svg>
+        How would you describe your recycling and waste habits?
+      </div>
+      <div class="radio-cards">
+        <label class="radio-card"><input type="radio" name="recycling" value="good"><span class="card-body"><span class="card-icon">♻️</span>Actively recycle &amp; compost</span></label>
+        <label class="radio-card"><input type="radio" name="recycling" value="average" checked><span class="card-body"><span class="card-icon">🗑️</span>Standard recycling</span></label>
+        <label class="radio-card"><input type="radio" name="recycling" value="poor"><span class="card-body"><span class="card-icon">🚯</span>Most things go to landfill</span></label>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-secondary" onclick="prevSection(4)"><span class="btn-arrow">←</span> Travel</button>
+      <button class="btn btn-primary" onclick="calculateResults()" style="background: var(--forest-mid);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+        Calculate my footprint
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══ RESULTS ═══ -->
+  <div id="results">
+    <div class="results-header">
+      <div class="section-number">Your results</div>
+      <h2 class="section-title" style="font-family:'DM Serif Display',serif; font-size:clamp(26px,4vw,36px);">Your estimated annual footprint</h2>
+      <div class="total-badge">
+        <span class="total-num" id="total-val">0</span>
+        <span class="total-unit">tCO₂e / year</span>
+      </div>
+      <div class="benchmark-row">
+        <div class="bench-card">
+          <div class="bench-val" id="bench-nz">8.5</div>
+          <div class="bench-label">NZ average</div>
+        </div>
+        <div class="bench-card">
+          <div class="bench-val" id="bench-target">2.5</div>
+          <div class="bench-label">2030 target</div>
+        </div>
+        <div class="bench-card">
+          <div class="bench-val" id="bench-world">4.7</div>
+          <div class="bench-label">World average</div>
+        </div>
+        <div class="bench-card" style="background: var(--sky);">
+          <div class="bench-val" id="bench-you" style="color:var(--forest)">—</div>
+          <div class="bench-label">You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating -->
+    <div class="rating-block" id="rating-block">
+      <span class="rating-emoji" id="rating-emoji">🌱</span>
+      <div class="rating-text">
+        <h3 id="rating-title">Calculating…</h3>
+        <p id="rating-desc"></p>
+      </div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="breakdown-section">
+      <div class="breakdown-title">Your footprint breakdown</div>
+
+      <div class="breakdown-row">
+        <span class="breakdown-icon">🏠</span>
+        <div class="breakdown-bar-wrap">
+          <span class="breakdown-bar-label">Home</span>
+          <div class="bar-track"><div class="bar-fill home" id="bar-home"></div></div>
+        </div>
+        <span class="breakdown-val" id="val-home">—</span>
+      </div>
+
+      <div class="breakdown-row">
+        <span class="breakdown-icon">🍽️</span>
+        <div class="breakdown-bar-wrap">
+          <span class="breakdown-bar-label">Food</span>
+          <div class="bar-track"><div class="bar-fill food" id="bar-food"></div></div>
+        </div>
+        <span class="breakdown-val" id="val-food">—</span>
+      </div>
+
+      <div class="breakdown-row">
+        <span class="breakdown-icon">✈️</span>
+        <div class="breakdown-bar-wrap">
+          <span class="breakdown-bar-label">Transport</span>
+          <div class="bar-track"><div class="bar-fill transport" id="bar-transport"></div></div>
+        </div>
+        <span class="breakdown-val" id="val-transport">—</span>
+      </div>
+
+      <div class="breakdown-row">
+        <span class="breakdown-icon">🛍️</span>
+        <div class="breakdown-bar-wrap">
+          <span class="breakdown-bar-label">Stuff</span>
+          <div class="bar-track"><div class="bar-fill stuff" id="bar-stuff"></div></div>
+        </div>
+        <span class="breakdown-val" id="val-stuff">—</span>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips-section">
+      <h3 class="tips-title">Your top actions to reduce emissions</h3>
+      <div id="tips-container"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="results-footer">
+      <p>Estimates based on NZ emission factors from the <a href="https://www.mfe.govt.nz/climate-change/measuring-emissions" target="_blank">Ministry for the Environment</a>, <a href="https://www.eeca.govt.nz" target="_blank">EECA</a>, and global IPCC lifestyle emissions research. This calculator gives a useful approximation — not an audited measurement.</p>
+      <br>
+      <p>Want to go further? Explore <a href="https://www.futurefit.nz" target="_blank">FutureFit NZ</a> or <a href="https://www.toitū.co.nz" target="_blank">Toitū Envirocare</a> for offset and reduction programmes.</p>
+      <br>
+      <button class="restart-btn" onclick="restartCalc()">↺ Start again</button>
+    </div>
+  </div>
+
+</div><!-- end main-wrap -->
+
+<script>
+// ══════════════════════════════════════════
+// STATE & NAVIGATION
+// ══════════════════════════════════════════
+let currentSection = 1;
+const totalSections = 4;
+
+function updateProgress() {
+  const pct = (currentSection / totalSections) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = 'Step ' + currentSection + ' of ' + totalSections;
+}
+
+function showSection(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const sel = document.getElementById(['','sec-home','sec-food','sec-travel','sec-stuff'][n]);
+  if (sel) { sel.classList.add('active'); sel.scrollIntoView({behavior:'smooth', block:'start'}); }
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('results').style.display = 'none';
+  currentSection = n;
+  updateProgress();
+}
+
+function nextSection(from) {
+  if (from < 4) showSection(from + 1);
+}
+
+function prevSection(from) {
+  if (from > 1) showSection(from - 1);
+}
+
+// ── SLIDER HELPER ──
+function updateSlider(inputId, outputId, formatter) {
+  const input = document.getElementById(inputId);
+  const output = document.getElementById(outputId);
+  if (input && output) output.textContent = formatter(parseFloat(input.value));
+}
+
+// ── CAR TOGGLE ──
+function showCarDetails(show) {
+  const el = document.getElementById('car-details');
+  el.classList.toggle('shown', show);
+}
+
+// ── COMMUTE DISTANCE TOGGLE ──
+function showCommuteDistance(show) {
+  const el = document.getElementById('commute-distance');
+  el.classList.toggle('shown', show);
+}
+
+// ══════════════════════════════════════════
+// CALCULATION ENGINE
+// ══════════════════════════════════════════
+function getVal(name) {
+  const el = document.querySelector('[name="' + name + '"]:checked');
+  return el ? el.value : null;
+}
+
+function calculateResults() {
+  let home = 0, food = 0, transport = 0, stuff = 0;
+
+  // ─── HOME ───
+  const hhSize = parseFloat(getVal('hh_size') || '2');
+  const homeSize = getVal('home_size') || 'medium';
+  const heating = getVal('heating') || 'elec_hp';
+  const cooking = getVal('cooking') || 'electric';
+  const hotWater = getVal('hot_water') || 'electric_hw';
+  const solar = getVal('solar') || 'no';
+
+  // Base electricity (tCO2e per household per year, NZ grid ~0.075 kg/kWh in 2024)
+  const sizeMultiplier = {small: 0.7, medium: 1.0, large: 1.45};
+  const baseElec = 1.1 * sizeMultiplier[homeSize]; // tCO2e for avg NZ house electricity
+
+  const heatingEmissions = {
+    elec_hp: 0.15,
+    elec_radiator: 0.35,
+    gas: 1.6,
+    wood: 0.55,
+    none: 0.0
+  };
+
+  const cookingEmissions = { electric: 0.05, gas: 0.3, induction: 0.04 };
+
+  // Hot water: NZ avg ~2,000 kWh/yr for electric cylinder; heat pump ~1/3 that; gas ~1,500 kWh equiv
+  const hotWaterEmissions = {
+    heat_pump_hw: 0.11,  // ~1,500 kWh * 0.075 / ~3.0 COP
+    electric_hw: 0.30,   // ~2,000 kWh * 0.075 * size adj
+    gas_hw: 0.75,        // ~1,500 kWh equiv gas * 0.198 kgCO2/kWh
+    solar_hw: 0.04       // residual backup electricity
+  };
+
+  let homeTotal = baseElec + heatingEmissions[heating] + cookingEmissions[cooking] + hotWaterEmissions[hotWater];
+  if (solar === 'yes') homeTotal *= 0.75;
+  home = homeTotal / hhSize;
+
+  // ─── FOOD ───
+  const dietEmissions = {
+    heavy_meat: 3.3,
+    medium_meat: 2.4,
+    low_meat: 1.7,
+    pescatarian: 1.5,
+    vegetarian: 1.1,
+    vegan: 0.8
+  };
+  const localMult = { mostly: 0.9, sometimes: 1.0, rarely: 1.1 };
+  const wasteMult = { low: 0.95, medium: 1.0, high: 1.08 };
+
+  food = dietEmissions[getVal('diet') || 'medium_meat']
+    * (localMult[getVal('local_food') || 'sometimes'])
+    * (wasteMult[getVal('food_waste') || 'medium']);
+
+  // ─── TRANSPORT ───
+  // Flights (return trips, tCO2e with RFI multiplier ~1.9x)
+  const shortFlights = parseFloat(document.getElementById('flights_short').value) || 0;
+  const medFlights = parseFloat(document.getElementById('flights_med').value) || 0;
+  const longFlights = parseFloat(document.getElementById('flights_long').value) || 0;
+  const flightsCO2 = (shortFlights * 0.25) + (medFlights * 0.85) + (longFlights * 2.5);
+
+  // Car
+  let carCO2 = 0;
+  const hasCar = getVal('has_car') || 'yes';
+  if (hasCar === 'yes') {
+    const km = parseFloat(document.getElementById('km_driven').value) || 12000;
+    const carType = getVal('car_type') || 'petrol';
+    // tCO2e per km (PHEV assumes ~50% electric, 50% petrol on NZ mix)
+    const emFactor = { petrol: 0.000192, diesel: 0.000209, hybrid: 0.000110, phev: 0.000075, ev: 0.000015 };
+    carCO2 = km * emFactor[carType];
+  }
+
+  // Commute — calculated from mode, one-way distance, and days/week
+  const commute = getVal('commute') || 'car_solo';
+  const commuteDays = parseFloat(getVal('commute_days') || '3');
+  const commuteKm = parseFloat(document.getElementById('commute_km') ? document.getElementById('commute_km').value : '15') || 15;
+  const annualCommuteKm = commuteKm * 2 * commuteDays * 48; // 48 working weeks
+
+  // Emission factors per km for commute modes (tCO2e/km)
+  const commuteEmFactor = {
+    car_solo:  0.000192,  // avg petrol car
+    car_share: 0.000096,  // shared between 2
+    public:    0.000040,  // NZ bus/rail average
+    cycle:     0.000002,  // e-bike residual
+    walk:      0.0,
+    wfh:       0.0
+  };
+
+  // If they own a car and drive to work, commute is already embedded in km_driven — avoid double-counting
+  let commuteCO2 = 0;
+  if (hasCar === 'no' || commute === 'public' || commute === 'cycle' || commute === 'walk' || commute === 'wfh') {
+    commuteCO2 = annualCommuteKm * (commuteEmFactor[commute] || 0);
+  }
+
+  transport = flightsCO2 + carCO2 + commuteCO2;
+
+  // ─── STUFF ───
+  const spendingBase = { low: 0.6, medium: 1.2, high: 2.0 };
+  stuff = spendingBase[getVal('spending') || 'medium'];
+
+  // Big purchases (one-off amortised over 1 year)
+  const bigPurchaseVals = {
+    new_car_petrol: 8.5,
+    new_car_ev: 5.5,
+    used_car: 1.5,
+    motorcycle: 0.8,
+    fridge_wash: 0.4,
+    tv: 0.3,
+    laptop_phone: 0.25,
+    furniture: 0.6,
+    renovation: 3.5
+  };
+  document.querySelectorAll('[name="big_purchase"]:checked').forEach(cb => {
+    if (bigPurchaseVals[cb.value]) stuff += bigPurchaseVals[cb.value];
+  });
+
+  // Recycling adjustment
+  const recyclingMult = { good: 0.93, average: 1.0, poor: 1.07 };
+  stuff *= recyclingMult[getVal('recycling') || 'average'];
+
+  const total = home + food + transport + stuff;
+
+  displayResults(total, home, food, transport, stuff);
+}
+
+// ══════════════════════════════════════════
+// DISPLAY RESULTS
+// ══════════════════════════════════════════
+function displayResults(total, home, food, transport, stuff) {
+  // Hide all sections
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+  const resultsEl = document.getElementById('results');
+  resultsEl.style.display = 'block';
+  setTimeout(() => resultsEl.classList.add('active'), 10);
+
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('progress-label').textContent = 'Results';
+
+  // Animate total
+  document.getElementById('total-val').textContent = total.toFixed(1);
+  document.getElementById('bench-you').textContent = total.toFixed(1);
+
+  // Breakdown values
+  const maxVal = Math.max(home, food, transport, stuff, 1);
+  function setBar(barId, valId, val, category) {
+    document.getElementById(valId).textContent = val.toFixed(2) + ' t';
+    setTimeout(() => {
+      document.getElementById(barId).style.width = Math.min((val / maxVal) * 100, 100) + '%';
+    }, 300);
+  }
+  setBar('bar-home', 'val-home', home, 'home');
+  setBar('bar-food', 'val-food', food, 'food');
+  setBar('bar-transport', 'val-transport', transport, 'transport');
+  setBar('bar-stuff', 'val-stuff', stuff, 'stuff');
+
+  // Rating
+  const ratingBlock = document.getElementById('rating-block');
+  const emoji = document.getElementById('rating-emoji');
+  const title = document.getElementById('rating-title');
+  const desc = document.getElementById('rating-desc');
+
+  const nzAvg = 8.5;
+  if (total < nzAvg * 0.6) {
+    ratingBlock.className = 'rating-block low';
+    emoji.textContent = '🌿';
+    title.textContent = 'Well below average — great work!';
+    desc.textContent = 'Your footprint is significantly below the New Zealand average of ~8.5 tCO₂e. You\'re on the right track, but there\'s always room to push further toward the 2030 climate target of 2.5 t.';
+  } else if (total < nzAvg * 1.1) {
+    ratingBlock.className = 'rating-block med';
+    emoji.textContent = '🌤️';
+    title.textContent = 'Around the New Zealand average';
+    desc.textContent = 'You\'re close to the national average of ~8.5 tCO₂e. A handful of targeted changes — especially around transport and diet — could significantly reduce your impact.';
+  } else {
+    ratingBlock.className = 'rating-block high';
+    emoji.textContent = '🌡️';
+    title.textContent = 'Above the New Zealand average';
+    desc.textContent = 'Your footprint is higher than most New Zealanders. The good news: with a few key changes you can make a real dent quickly. Focus on the highest-emission categories first.';
+  }
+
+  // Dynamic tips
+  generateTips(home, food, transport, stuff);
+
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function generateTips(home, food, transport, stuff) {
+  const allTips = [
+    { cat: 'transport', condition: transport > 2, icon: '✈️', title: 'Offset or reduce flying', desc: 'Flights are often the single biggest lever. One fewer long-haul return trip can save ~2.5 tCO₂e.', saving: '−1 to 3 t' },
+    { cat: 'transport', condition: true, icon: '⚡', title: 'Switch to an EV', desc: 'Replacing a petrol car with an EV on the NZ grid cuts your driving emissions by ~90%.', saving: '−1 to 2 t' },
+    { cat: 'food', condition: food > 2, icon: '🌱', title: 'Eat less red meat', desc: 'Cutting beef and lamb to once a week can save around 0.5–0.8 tCO₂e per year.', saving: '−0.5 to 0.8 t' },
+    { cat: 'home', condition: home > 1.2, icon: '♨️', title: 'Install a heat pump', desc: 'Replacing a gas heater or electric bar heater with a heat pump cuts heating emissions by 60–80%.', saving: '−0.5 to 1 t' },
+    { cat: 'home', condition: true, icon: '☀️', title: 'Add solar panels', desc: 'Rooftop solar can cut your household electricity footprint by 25% or more and lower bills.', saving: '−0.2 to 0.5 t' },
+    { cat: 'stuff', condition: stuff > 2, icon: '🔄', title: 'Buy second-hand first', desc: 'Choosing pre-owned electronics, furniture and clothing reduces manufacturing emissions significantly.', saving: '−0.3 to 1 t' },
+    { cat: 'food', condition: true, icon: '🗑️', title: 'Reduce food waste', desc: 'Roughly a third of food produced globally is wasted. Cutting yours saves money and ~0.1–0.2 t.', saving: '−0.1 to 0.2 t' },
+    { cat: 'transport', condition: true, icon: '🚲', title: 'Walk or cycle more', desc: 'Swapping short car trips for walking or cycling is zero-emission and great for health.', saving: '−0.1 to 0.5 t' },
+  ];
+
+  const sorted = allTips.filter(t => t.condition).slice(0, 4);
+  const container = document.getElementById('tips-container');
+  container.innerHTML = sorted.map(t => `
+    <div class="tip-card">
+      <div class="tip-icon">${t.icon}</div>
+      <div class="tip-text">
+        <strong>${t.title}</strong>
+        <span>${t.desc}</span>
+      </div>
+      <span class="tip-saving">${t.saving}</span>
+    </div>
+  `).join('');
+}
+
+function restartCalc() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('results').classList.remove('active');
+  showSection(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Init ──
+updateProgress();
+</script>
+</body>
+</html>
